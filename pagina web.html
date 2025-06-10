@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroSpeed - Comparador de Precios</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #c9cb2b 0%, #c9cb2b 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-image {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            height: 60px;
+        }
+        
+        .header-image-centered {
+            display: block;
+            margin: 0 auto 10px auto;
+            height: 350px;
+            position: static;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .search-container {
+            display: flex;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        #busqueda {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #c9cb2b 0%, #c9cb2b 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 8px rgba(110, 72, 170, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(110, 72, 170, 0.4);
+        }
+        
+        .producto {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        
+        .producto:hover {
+            transform: translateY(-3px);
+        }
+        
+        .producto h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #6e48aa;
+        }
+        
+        .mejor-precio {
+            background-color: #f0e6ff;
+            position: relative;
+        }
+        
+        .mejor-precio::after {
+            content: "⭐ MEJOR PRECIO";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6e48aa;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .mejor-precio td {
+            font-weight: bold;
+            color: #6e48aa;
+        }
+        
+        .tienda-logo {
+            height: 25px;
+            vertical-align: middle;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        .no-resultados {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-size: 1.1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .ver-producto {
+            background: #6e48aa;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        
+        .ver-producto:hover {
+            background: #5d3a9e;
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .mejor-precio::after {
+                position: static;
+                transform: none;
+                display: inline-block;
+                margin-left: 10px;
+            }
+            
+         
+            }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://i.ibb.co/HDGZCQbG/Imagen-de-Whats-App-2025-04-03-a-las-09-02-12-9b2ed4b6.jpg" alt="ElectroSpeed Logo" class="header-image-centered">
+    
+        <p class="tagline">Comparador de precios de productos electricos</p>
+    </header>
+    
+    <div class="search-container">
+        <input type="text" id="busqueda" placeholder="Busca productos electricos... (ej: Tomacorrientes, Caja termica, Tecnoducto)" autofocus>
+        <button onclick="buscarProductos()">Comparar Precios</button>
+    </div>
+    
+    <div id="resultados">
+        <div class="no-resultados">
+            <p>🔍 Busca productos electricos para comparar precios entre tiendas</p>
+            <p>Prueba con: "Tomacorrientes", "Receptáculos", "Caja termina 4 E", "Tecnoducto 3/4"</p>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de productos electricos
+        const productos = [
+            {
+                id: 1,
+                nombre: "Tomacorrientes",
+            
+                imagen: "https://cdn.celasa.com.gt/productos/DS009.jpg",
+                tiendas: [
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        precio: 2.25,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/a70853a2-26ee-46ad-bf84-acc053e3a145?producto=toma%20doble%20polarizado%20blanco%20plata"
+                    },
+                    {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        precio: 2.15,
+                        url: "https://www.vidri.com.sv/producto/80557/toma-de-empotrar-doble-polarizado-con-placa-15a-120vac-blanco.html?srsltid=AfmBOop0duILuMFWW6IuwqUM1ap1L-3aH1sDRFdigz5dqauQUuqcOezu"
+                    },
+                    {
+                        nombre: "Celasa",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjiVklwGaJjmuTWr4pkLm4iIMb-Xrin7NuCg&s",
+                        precio: 2.85,
+                        url: "https://celasa.com.sv/shop/ar00335-ar00335-tomacorriente-doble-2p-t-16a-127v-blanco-a-devices-60?category=43#attr="
+                    }
+                ]
+            },
+            {
+                id: 2,
+                nombre: "Receptaculo",
+                
+                imagen: "https://sv.epaenlinea.com/media/catalog/product/cache/e28d833c75ef32af78ed2f15967ef6e0/4/c/4c7c9a2a-393f-45c9-8f73-cc5d1662f2e9.jpg",
+                tiendas: [
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        precio: 0.90,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/402567e8-dd97-4b36-bcec-5c69b83b0b42?producto=receptaculo%20para%20foco%20e27%20baquelita%20marfil%20s%2Fcadena"
+                    },
+                        {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        precio: 0.90,
+                        url: "https://www.vidri.com.sv/producto/12619/receptaculo-de-baquelita-eagle-1175w.html"
+                    },
+                    {
+                        nombre: "Celasa",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjiVklwGaJjmuTWr4pkLm4iIMb-Xrin7NuCg&s",
+                        precio: 0.94,
+                        url: "https://celasa.com.sv/shop/plf08-plf08-receptaculo-sin-cadena-150w-blanco-eagle-196#attr="
+                    }
+                ]
+            },
+            {
+                id: 3,
+                nombre: "Caja termina 4 E",
+                marca:"General Electric",
+                imagen: "https://www.freundferreteria.com/Productos/GetMultimedia?idProducto=23573253-6a02-4a75-9150-bdbb8832a1eb&idMultimediaProducto=55cd96a8-d707-43d8-b097-be666339fdac&width=500&height=500&qa=90&esImagen=True&ext=.jpg",
+                tiendas: [
+                    {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        
+                        precio: 44.95,
+                        url: "https://www.vidri.com.sv/producto/3024/caja-termica-monofasica-4-circuitos.html?srsltid=AfmBOopj2BeJ1swYlrcrI10YE3ZddVu-bKJItQ-1wAxqm1KTMFfK54dE"
+                    },
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                    
+                        precio: 46.50,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/ecfe48ca-0911-48e2-9c53-2131c60f95b7?producto=caja%20termica%20monofasico%20120-240%20v%20metal%204%20circuitos"
+                    },
+                    {
+                        nombre: "Celasa",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjiVklwGaJjmuTWr4pkLm4iIMb-Xrin7NuCg&s",
+                       
+                        precio: 40.93,
+                        url: "https://celasa.com.sv/shop/ta003-ta003-caja-termica-monofasica-4-circuitos-125a-226?category=85&order=create_date+desc#attr="
+                    }
+                ]
+            },
+            {
+                id: 4,
+                nombre: "Tecnoducto 3/4",
+               
+                imagen: "https://www.freundferreteria.com/Productos/GetMultimedia?idProducto=e379d548-3a40-4fba-81a9-c524c31f27a8&idMultimediaProducto=9a602000-75ab-48ac-8ca1-44aef0c35f7b&width=500&height=500&qa=90&esImagen=True&ext=.jpg",
+                tiendas: [
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        
+                        precio: 0.63,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/e379d548-3a40-4fba-81a9-c524c31f27a8?producto=tecno-ducto%20corrugado%20para%20cableado%20electrico%203%2F4%20pulgada%20celeste%20flexible"
+                    },
+                    {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        precio: 0.65,
+                        url: "https://www.vidri.com.sv/producto/72372/tubo-conduit-flexible-3-4-pulg-1905-mm-azul.html?srsltid=AfmBOoq_AIYFNiPwx81KdEbBKmwWePLe8ht_kbaFzoyan2CeubA_-KhX"
+                        
+                    },
+                    {
+                        nombre: "Lemus",
+                        logo: "https://lemus.com.sv/assets/media/mazlay/logolemusr.png",
+                        precio: 0.50,
+                        url: "https://lemus.com.sv/product/tecnoducto-corrugado-34plg-mt--TPVC-00013"
+                    },
+                    {
+
+                        nombre: "EPA",
+                        logo: "https://sv.epaenlinea.com/media/logo/default/Logo_EPA.png",
+                        precio: 0.66,
+                        url: "https://sv.epaenlinea.com/tubo-conduflex-3-4-mtr.html?srsltid=AfmBOoqY1BiuOOWd7xGTB0FTLJG8Xg4y_sMuHqG-bYmb8LMhsHQIOEyt"
+                    }
+                ]
+            },
+            {
+                id: 5,
+                nombre: "ThhN calibre #14",
+            
+                imagen: "https://ferreteriavidri.com/images/items/thumb/2663.jpg?v=1749409802",
+                tiendas: [
+                    {
+                        nombre: "vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                    
+                        precio: 0.45,
+                        url: "https://www.vidri.com.sv/producto/2663/cable-electrico-thhn-14-208-mm2-negro.html?srsltid=AfmBOoq3ZsOOSEctx_ufMLMVnMAKnk8sPyajAWP83vHs8IvB7bzP3BWr"
+                    },
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        precio: 0.37,
+                        url: "https://www.bestbuy.com/site/apple-macbook-air-13-6-laptop-m2-chip-8gb-memory-256gb-ssd-midnight/6509650.p"
+                    },
+                    {
+                        nombre: "Lemus",
+                        logo: "https://lemus.com.sv/assets/media/mazlay/logolemusr.png",
+                        precio: 0.39,
+                        url: "https://lemus.com.sv/product/cable-thhn-blanco-14-condumex-3007201bobina-920097"
+                    },
+                    {
+                        nombre: "EPA",
+                        logo: "https://sv.epaenlinea.com/media/logo/default/Logo_EPA.png",
+                        precio: 0.37,
+                        url: "https://sv.epaenlinea.com/metro-de-cable-thhn-14-negro-ul-viakon7h-600v.html"
+                    }
+                ]
+            },
+            {
+                id: 6,
+                nombre: "Caja rectangular pvc",
+            
+                imagen: "https://www.freundferreteria.com/Productos/GetMultimedia?idProducto=88c46915-403d-48b7-87bb-8f83f14fab19&idMultimediaProducto=94e70f2b-056e-4b34-bb3b-362192f7f6ed&width=500&height=500&qa=90&esImagen=True&ext=.jpg",
+                tiendas: [
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        precio: 0.45,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/88c46915-403d-48b7-87bb-8f83f14fab19?idCategoria=ecd54d59-ad52-425c-8e4e-fc302e3ed383&producto=caja%20rectangular%20pvc%20para%20switch-tomas%204x2x%C2%BD%20plg"
+                    },
+                    {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        precio: 0.45,
+                        url: "https://www.vidri.com.sv/producto/62677/caja-rectangular-4x2-pulg-pvc-1016-cm-x-508-cm.html?srsltid=AfmBOqd8DQDYt5DgkTptZ0RaeU2-gwKR-zV0IEA7RdyTwTPnt-HtEq3"
+                    },
+                    {
+                        nombre: "Celasa",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjiVklwGaJjmuTWr4pkLm4iIMb-Xrin7NuCg&s",
+                        precio: 0.50,
+                        url: "https://celasa.com.sv/shop/car09-car09-caja-rectangular-plastica-1-2-pulg-x3-4-pulg-gris-amanco-93?category=62#attr="
+                    },
+                    {
+                        nombre: "EPA",
+                        logo: "https://sv.epaenlinea.com/media/logo/default/Logo_EPA.png",
+                        precio: 0.45,
+                        url: "https://sv.epaenlinea.com/caja-rectangular-4x2-pvc-ul.html"
+                    },
+                    {
+                        nombre: "Lemus",
+                        logo: "https://lemus.com.sv/assets/media/mazlay/logolemusr.png",
+                        precio: 0.45,
+                        url: "https://lemus.com.sv/product/caja-rectangular-pvc-ul-amanco-510192"
+                    }
+                ]
+            },{
+            id: 7,
+                nombre: "Caja Cuadrada pvc",
+            
+                imagen: "https://www.freundferreteria.com/Productos/GetMultimedia?idProducto=18ef7a5c-9b0c-4afd-9612-da325ef4801a&idMultimediaProducto=9129771a-9d89-47fb-a785-2dc556ca15a7&width=500&height=500&qa=90&esImagen=True&ext=.jpg",
+                tiendas: [
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        precio: 1.25,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/2cdcfe99-2fcb-4ec2-a95f-3341ca0948d3?producto=caja%20cuadrada%20pvc%204x4x%C2%BD%20pulgada"
+                    },
+                    {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        precio: 1.25,
+                        url: "https://www.vidri.com.sv/Mobile/producto/62678/caja-cuadrada-4x4-pulg-pvc-1016-cm-x-1016-cm.html?srsltid=AfmBOoqXZEy5VvlSdoNzJ_K_e7LqUZjOk6iRJ2ZsbDeO2a41MlyxjckS"
+                    },
+                
+                    {
+                        nombre: "EPA",
+                        logo: "https://sv.epaenlinea.com/media/logo/default/Logo_EPA.png",
+                        precio: 1.21,
+                        url: "https://sv.epaenlinea.com/caja-cuadrada-4-pvc-ul.html"
+                    },
+                    {
+                        nombre: "Lemus",
+                        logo: "https://lemus.com.sv/assets/media/mazlay/logolemusr.png",
+                        precio: 1.20,
+                        url: "https://lemus.com.sv/product/caja-cuadrada-pvc-4x4-ul-amanco-ELEC-00157"
+                    }
+                ]
+                },
+                
+            {
+                id: 8,
+                nombre: "Caja octagonal pvc",
+            
+                imagen: "https://www.freundferreteria.com/Productos/GetMultimedia?idProducto=e73221c8-2f30-4dc3-82dc-03d7b6208764&idMultimediaProducto=b12cd2d5-b346-4ae4-a22e-ed460705fa3b&width=500&height=500&qa=90&esImagen=True&ext=.jpg",
+                tiendas: [
+                    {
+                        nombre: "Freund",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSroamFoZxhxDK8iAOsHT5NB7nFY9rlmPEr6w&s",
+                        precio: 0.49,
+                        url: "https://www.freundferreteria.com/Productos/Detalle/e73221c8-2f30-4dc3-82dc-03d7b6208764?idCategoria=ecd54d59-ad52-425c-8e4e-fc302e3ed383&producto=caja%20octagonal%20pvc%204x%C2%BDx%C2%BE%20plg"
+                    },
+                    {
+                        nombre: "Vidri",
+                        logo: "https://ferreteriavidri.com/public/images/Vidri_Alt.png?v=2022",
+                        precio: 0.50,
+                        url: "https://www.vidri.com.sv/producto/62676/caja-octagonal-4-pulg-pvc-1016-cm.html?srsltid=AfmBOop9hqn34klW4oIYDgGjYa6ssR8y4-BDmHAT5QQ__Fyx4Q52MDhi"
+                    },
+                    {
+                        nombre: "Celasa",
+                        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjiVklwGaJjmuTWr4pkLm4iIMb-Xrin7NuCg&s",
+                        precio: 0.54,
+                        url: "https://celasa.com.sv/shop/cag14-cag14-caja-octagonal-plastica-4-pulg-x1-2-pulg-x3-4-pulg-gris-amanco-92?category=61#attr="
+                    },
+                    {
+                        nombre: "EPA",
+                        logo: "https://sv.epaenlinea.com/media/logo/default/Logo_EPA.png",
+                        precio: 0.49,
+                        url: "https://sv.epaenlinea.com/caja-octogonal-4-pvc-ul.html?srsltid=AfmBOoppLpdM-LboNdJXSkJmaQtA6QNsR6BOlXtAGfhrM6imNPeuM4m0"
+                    },
+                    {
+                        nombre: "Lemus",
+                        logo: "https://lemus.com.sv/assets/media/mazlay/logolemusr.png",
+                        precio: 0.49,
+                        url: "https://lemus.com.sv/product/caja-octagonal-pvc-ul-amanco-510191"
+                    }
+                ]
+            },
+        ];
+
+        function buscarProductos() {
+            const busqueda = document.getElementById('busqueda').value.toLowerCase();
+            const resultadosDiv = document.getElementById('resultados');
+            
+            if (!busqueda.trim()) {
+                resultadosDiv.innerHTML = `
+                    <div class="no-resultados">
+                        <p>🔍 Por favor, escribe el nombre de un producto electrico</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Filtrar productos que coincidan con la búsqueda
+            const productosFiltrados = productos.filter(p => 
+                p.nombre.toLowerCase().includes(busqueda) || 
+                (p.marca && p.marca.toLowerCase().includes(busqueda))
+            );
+            
+            if (productosFiltrados.length === 0) {
+                resultadosDiv.innerHTML = `
+                    <div class="no-resultados">
+                        <p>No encontramos productos electrónicos que coincidan con "${busqueda}"</p>
+                        <p>Prueba con términos más generales como "Tomacorriente" o "Receptaculo"</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Generar HTML para los resultados
+            let htmlResultados = '';
+            
+            productosFiltrados.forEach(producto => {
+                // Ordenar tiendas por precio (de menor a mayor)
+                const tiendasOrdenadas = [...producto.tiendas].sort((a, b) => a.precio - b.precio);
+                const mejorPrecio = tiendasOrdenadas[0].precio;
+                
+                htmlResultados += `
+                    <div class="producto">
+                        <h3>${producto.nombre}${producto.marca ? ` <small>(${producto.marca})</small>` : ''}</h3>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tienda</th>
+                                    <th>Precio</th>
+                                    <th>Comprar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                tiendasOrdenadas.forEach(tienda => {
+                    const esMejorPrecio = tienda.precio === mejorPrecio;
+                    
+                    htmlResultados += `
+                        <tr${esMejorPrecio ? ' class="mejor-precio"' : ''}>
+                            <td>
+                                ${tienda.logo ? `<img src="${tienda.logo}" alt="${tienda.nombre}" class="tienda-logo">` : ''}
+                                ${tienda.nombre}
+                            </td>
+                            <td>$${tienda.precio.toFixed(2)}</td>
+                            <td><a href="${tienda.url}" target="_blank" class="ver-producto">Ver oferta</a></td>
+                        </tr>
+                    `;
+                });
+                
+                htmlResultados += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            });
+            
+            resultadosDiv.innerHTML = htmlResultados;
+        }
+        
+        // Permitir búsqueda al presionar Enter
+        document.getElementById('busqueda').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarProductos();
+            }
+        });
+    </script>
+</body>
+</html>
